@@ -18,7 +18,7 @@ competencies: Programming
 *Before this lesson, students should:*
 - NOT KNOW ACTIVE RECORD
 
-[Setup instructions here](https://git.generalassemb.ly/wdi-nyc-garlic/LECTURE_U04_D06_Active-Record-101/blob/master/setup.md#set-up)
+[Setup instructions here](https://git.generalassemb.ly/wdi-epiphany/LECTURE_U04_D06_Active-Record-101/blob/master/setup.md#set-up)
 
 ## What _is_ Active Record???
 
@@ -257,7 +257,7 @@ end
 
 We are now going to build this app from scratch.
 
-`cd` into whatever directory you normally put new projects and we will follow [instructions.md](https://git.generalassemb.ly/wdi-nyc-garlic/LECTURE_U04_D06_Active-Record-101/blob/master/instructions.md#building-a-rails-app) together.
+`cd` into whatever directory you normally put new projects and we will follow [instructions.md](https://git.generalassemb.ly/wdi-epiphany/LECTURE_U04_D06_Active-Record-101/blob/master/instructions.md#building-a-rails-app) together.
 
 ## Resources
 
