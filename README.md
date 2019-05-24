@@ -375,7 +375,7 @@ Migrations allow us to perform mini-database operations. Let's look at some of t
 
 Let's pair up and pick a migration method and report back its use case.
 
-### Step [9] - Generate Talk model
+### Step [9] - Implement Talk model
 
 1. Generate a Talk model with attributes: topic (a string), duration (an integer), and start_time (a datetime).
 
@@ -399,9 +399,13 @@ $ rails generate model Talk topic:string duration:integer start_time:datetime
 
 2. Run `rails db:migrate` to update your schema with this new model, then head over to the Rails console and create a Talk instance as a sanity check.
 
-#### Rails Association :: One to Many
+#### Rails Association
 
-3. Deciding which model will have `has_many` and which will have `belongs_to` changes the logic of your application. In this case, each Talk has many Speakers; therefore the Speaker table will have a reference to the talk_id foreign key.
+There is a one to many relationship between Talk and Speakers. 
+
+Deciding which model will have `has_many` and which will have `belongs_to` changes the logic of your application. In this case, each Talk has many Speakers; therefore the Speaker table will have a reference to the talk_id foreign key.
+
+3. First, we create the relationship between the models.
 
 ```
 class Talk < ApplicationRecord
@@ -415,7 +419,7 @@ class Speaker < ApplicationRecord
 end
 ```
 
-4. Add some Talks to the `db/seeds.rb` file:
+4. Second, add some Talks to the `db/seeds.rb` file:
 
 ```ruby
 Speaker.destroy_all
@@ -448,44 +452,70 @@ katy = Speaker.create(
   })
 ```
 
-Next, we make the association between the Talk and the Speaker by:
+5. Make the association between the Talk and the Speaker by running a migration that adds a `talk_id` column to the speakers table.
 
 ```
-$ rails g migration AddTalkIdToSpeakers
+$ rails g migration AddTalkIdToSpeakers talk:references
 ```
 
-Now, in the `db/migrate` folder you will see a migration for the added column. 
+This generates a migration that uses the ‘add_reference` method.The add_reference method will not only create a talk_id column on your Speaker table, but also add an index on talk_id.
 
 ```
-class AddJobTitleToSpeakers < ActiveRecord::Migration[5.0]
-	def change
-     # add migration code here
-	end
+class AddTalkIdToSpeakers < ActiveRecord::Migration[5.2]
+  def change
+    add_reference :speakers, :talk, index: true
+  end
 end
 ```
-
-Open the file and add the following code:
+In the `db/migrate` folder you will see a migration for the added column; while in the `migrate/schema.rb` you will see an updated table schema with the talk_id and index.
 
 ```
-...
-	def change
-		add_column :speakers, :talk_id, :integer
-		add_index :speakers, :talk_id
-	end
-...
+  create_table "speakers", force: :cascade do |t|
+	 ...
+    t.integer "talk_id"
+    t.index ["talk_id"], name: "index_speakers_on_talk_id"
+  end
 ```
 
+Now, you can query realtionships between the tables in the rails console:
 
-5. Try a few complex queries:
- - Using `after_initialize` [ActiveRecord Callback](https://guides.rubyonrails.org/active_record_callbacks.html) add default values for a talk's duration (e.g. 30 minutes) and topic (e.g. "Topic Name Here").
- - Select all talks with start_times in the future.
- - Count the number of talks with the default topic ("TBD")
- - Iterate through all the talks with the default topic and puts the start time of each. **Bonus:** format the start time in a more human readable way.
+`Speaker.last.talks` returns the talk associated with the first speaker:
 
-<details>
-<summary>Hint for using `after_initialize`:</summary>
-<p>Create a `add_default_values` instance method to use with `after_initialize`, and be careful not to overwrite a `duration` or `topic` passed in for the instance.</p>
-</details>
+```
+  Speaker Load (0.7ms)  SELECT  "speakers".* FROM "speakers" ORDER BY "speakers"."id" DESC LIMIT $1  [["LIMIT", 1]]
+  Talk Load (2.7ms)  SELECT  "talks".* FROM "talks" WHERE "talks"."id" = $1 LIMIT $2  [["id", 1], ["LIMIT", 1]]
+=> #<Talk:0x00007fe54f323cc8
+ id: 1,
+ topic: "From Waste to Wealth: Moving to a Circular Economy",
+ duration: 90,
+ start_time: Sun, 01 Sep 2019 17:00:00 UTC +00:00,
+ created_at: Thu, 23 May 2019 20:53:51 UTC +00:00,
+ updated_at: Thu, 23 May 2019 20:53:51 UTC +00:00>
+```
+while `Talk.first.speakers` returns the two speakers associated with the talk topic, "From Waste to Wealth: Moving to a Circular Economy":
+
+```
+  Talk Load (0.7ms)  SELECT  "talks".* FROM "talks" ORDER BY "talks"."id" ASC LIMIT $1  [["LIMIT", 1]]
+  Speaker Load (0.6ms)  SELECT "speakers".* FROM "speakers" WHERE "speakers"."talk_id" = $1  [["talk_id", 1]]
+=> [#<Speaker:0x00007fe54f677820
+  id: 1,
+  first_name: "Elise",
+  last_name: "Ngobi",
+  email: "elise.ngobi@dash-hudson.com",
+  created_at: Thu, 23 May 2019 20:53:51 UTC +00:00,
+  updated_at: Thu, 23 May 2019 20:53:51 UTC +00:00,
+  job_title: nil,
+  talk_id: 1>,
+ #<Speaker:0x00007fe54f6773e8
+  id: 2,
+  first_name: "Katy",
+  last_name: "Blythe",
+  email: "kblythe@matchesfashion.com",
+  created_at: Thu, 23 May 2019 20:53:51 UTC +00:00,
+  updated_at: Fri, 24 May 2019 13:38:15 UTC +00:00,
+  job_title: "Global Chief Content Officer",
+  talk_id: 1>]
+```
 
 ### Next Steps
 
