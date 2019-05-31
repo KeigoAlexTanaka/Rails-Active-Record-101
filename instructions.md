@@ -80,7 +80,7 @@ Let's check out `db/schema.rb` to visualize our schema
 
 ## Adding relations
 
-Let's go back to [Relations and Models](https://git.generalassemb.ly/wdi-nyc-garlic/LECTURE_U04_D06_Active-Record-101#ar-relations) part of the lecture and discuss these again.
+Let's go back to [Relations and Models](https://git.generalassemb.ly/sei-nyc-jeopardy/Rails-Active-Record-101#ar-relations) part of the lecture and discuss these again.
 
 You may use these as your relations.
 
@@ -90,7 +90,7 @@ Create teachers, courses, and students in your `db/seeds.rb` file.  Then run `ra
 
 > If you change seed file and want to run it again you should run `rails db:reset` instead as this will delete all the entries before seeding
 
-You may [use this](https://git.generalassemb.ly/wdi-nyc-garlic/LECTURE_U04_D06_Active-Record-101/blob/master/db/seeds.rb) as your seed data.
+You may [use this](https://git.generalassemb.ly/sei-nyc-jeopardy/Rails-Active-Record-101/blob/master/db/seeds.rb) as your seed data.
 
 Save this as your `db/seeds.rb`
 
